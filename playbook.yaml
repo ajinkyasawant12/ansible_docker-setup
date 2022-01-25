@@ -10,15 +10,7 @@
         name: "{{item}}"
         state: present
         update_cache: yes
-      loop:
-        - apt-transport-https
-        - ca-certificates
-        - curl
-        - gnupg-agent
-        - software-properties-common
-        - python3-pip 
-        - virtualenv 
-        - python3-setuptools
+      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
 
     - name: adding Docker GPG key
       apt_key:
@@ -35,15 +27,24 @@
         name: "{{item}}"
         state: latest
         update_cache: yes
-      loop:
-        - docker-ce
-        - docker-ce-cli
+      loop: [ 'docker-ce', 'docker-ce-cli' ]
 
-    - name: Start docker
-      service:
+    - name: Install Docker Module for Python
+      pip:
         name: docker
-        state: started
-        enabled: yes
+
+    - name: Pull default Docker image
+      docker_image:
+        name: "{{ image_name }}"
+        source: pull
+      
+    - name: Create default containers
+      docker_container:
+        name: "{{ container_name }}{{ item }}"
+        image: "{{ image_name }}"
+        command: "{{ container_command }}"
+        state: present
+      with_sequence: count={{ container_count }}
 
   handlers:
     - name: restart docker
