@@ -9,5 +9,5 @@ Customization can be doen using `vars/default.yml` file
 ## Running this Playbook
 
 ```command
-ansible-playbook -i [inventory file] -u [remote user] playbook.yml
+ansible-playbook -i [inventory file] -u [remote user] main.yml
 ```

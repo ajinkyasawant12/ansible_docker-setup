@@ -1,28 +1,31 @@
 ---
-- hosts: all
+#Ansible playbook for Docker installation on Ubuntu 
+
+- name: Install Docker on Ubuntu
+  hosts: all
   become: true
   vars_files:
     - vars/default.yml
 
   tasks:
-    - name: installing dependencies
+    - name: Installing dependencies
       apt:
         name: "{{item}}"
         state: present
         update_cache: yes
       loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
 
-    - name: adding Docker GPG key
+    - name: Adding Docker GPG key
       apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
+        url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
         state: present
 
-    - name: adding Docker repository
+    - name: Adding Docker repository
       apt_repository:
-        repo: deb https://download.docker.com/linux/ubuntu bionic stable
+        repo: "deb [arch={{ ansible_architecture }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
         state: present
 
-    - name: installing Docker
+    - name: Installing Docker
       apt:
         name: "{{item}}"
         state: latest
